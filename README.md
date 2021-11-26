@@ -59,3 +59,11 @@ Contributors
 * Mark Galloway
 * Abram Hindle
 * Cole Mackenzie
+
+References
+============
+* https://github.com/abramhindle/WebSocketsExamples/blob/master/chat.py
+* https://dev.to/akhil_001/generating-random-color-with-single-line-of-js-code-fhj, credit to Akhil Sai from May 12,2019
+* https://www.w3schools.com/tags/canvas_linecap.asp
+* https://www.w3schools.com/tags/canvas_shadowblur.asp
+* https://www.w3schools.com/tags/canvas_createlineargradient.asp

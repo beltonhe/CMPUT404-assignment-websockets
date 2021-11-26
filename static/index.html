@@ -47,14 +47,23 @@ world = {};
 //XXX: TODO Make this prettier!
 function drawCircle(context,entity) {
     with(context) {
-        beginPath();                
-        lineWidth = 3;
+        beginPath();              
+        lineWidth = 7;
         var x = entity["x"];
         var y = entity["y"];
         //moveTo(x,y);
+        // https://www.w3schools.com/tags/canvas_addcolorstop.asp
+        var grd = createLinearGradient(0, 0, 175, 0);
+        grd.addColorStop(0, "white");
+        grd.addColorStop(0.5, "blue");        
+        grd.addColorStop(1, "black");
         fillStyle = entity["colour"];
-        strokeStyle = fillStyle;
+        strokeStyle = grd;
+        shadowBlur = 10;
+        shadowColor = "lightgrey";
+        linecap = "round"
         arc(x, y, (entity["radius"])?entity["radius"]:50, 0, 2.0 * Math.PI, false);  
+        fill();
         stroke();                                
     }
 }
@@ -125,7 +134,11 @@ function addEntity(entity, data) {
     world[entity] = data;
     drawNextFrame(); // (but should we?)
     //XXX: Send a XHTML Request that updates the entity you just modified!
+    new_data = {};
+    new_data[entity] = data;
+    socket.send(JSON.stringify(new_data));
 }
+
 var counter = 0;
 function addEntityWithoutName(data) {
     var name = "X"+(counter++)%100;
@@ -231,11 +244,14 @@ mouse = (function() {
 // Add the application specific mouse listeners!
 //XXX: TODO Make these prettier!
 mouse.mousedowners.push(function(x,y,clicked,e) {
-    addEntityWithoutName({'x':x,'y':y,'colour':'blue'});
+    // https://dev.to/akhil_001/generating-random-color-with-single-line-of-js-code-fhj, credit to Akhil Sai from May 12,2019
+    const color = Math.floor(Math.random()*16777215).toString(16);
+    let randomcolor = '#'+color;
+    addEntityWithoutName({'x':x,'y':y,'colour':randomcolor, 'radius':40});
 });
 
 mouse.mouseuppers.push(function(x,y,clicked,e) {
-    addEntityWithoutName({'x':x,'y':y,'colour':'red'});
+    addEntityWithoutName({'x':x,'y':y,'colour':'red', 'radius':20});
 });
 
 mouse.mousedraggers.push(function(x,y,clicked,e) {
@@ -243,17 +259,16 @@ mouse.mousedraggers.push(function(x,y,clicked,e) {
                           'radius':10});
 });
 
-
 function update() {
     drawFrame();
 }
-
 
 function wsSetup() {
     var url = "ws://"+host+"/subscribe";   
     socket = new WebSocket(url);
     socket.onopen = function() {
         //XXX: TODO What are you going to do here?
+        socket.send(JSON.stringify({"Connection": "upgraded"}))
     };
     socket.onerror = function(msg) {
         debug("WebSocket Error:" + msg.data);
@@ -262,6 +277,11 @@ function wsSetup() {
         try {
             debug("WebSocket Recv:" + msg.data);
             //XXX: TODO What are you going to do here?            
+            var message = JSON.parse(msg.data)
+            for (let value in message){
+                world[value] = message[value]
+            }
+            drawNextFrame()
         } catch (e) {
             alert("socket on message: " + e);
         }
@@ -269,7 +289,6 @@ function wsSetup() {
 }
 
 wsSetup();
-
 
 
 
