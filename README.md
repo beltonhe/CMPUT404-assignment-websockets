@@ -67,3 +67,8 @@ References
 * https://www.w3schools.com/tags/canvas_linecap.asp
 * https://www.w3schools.com/tags/canvas_shadowblur.asp
 * https://www.w3schools.com/tags/canvas_createlineargradient.asp
+
+Collaboration
+============
+* amahesh
+* jpu1
